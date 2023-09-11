@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
 import { View, Text, Button } from '@tarojs/components';
 import './index.less'
@@ -11,6 +11,7 @@ let closeOtherPagePopUpHooks = new Set();
 if (typeof wx.onNeedPrivacyAuthorization === 'function') {
   wx.onNeedPrivacyAuthorization((resolve) => {
     console.log('💢hsuna => Taro => onNeedPrivacyAuthorization');
+    privacyResolves.add(resolve);
     if (typeof privacyHandler === 'function') {
       privacyHandler(resolve);
     }
@@ -28,6 +29,7 @@ const closeOtherPagePopUp = (closePopUp) => {
 const PrivacyPopup = (props) => {
   const { title = '用户隐私保护指引', auto } = props;
   const [innerShow, setInnerShow] = useState(false);
+  const innerResolves = useRef(new Set);
 
   const closePopUp = useCallback(() => {
     setInnerShow(false);
@@ -35,11 +37,15 @@ const PrivacyPopup = (props) => {
 
   useDidShow(() => {
     privacyHandler = (resolve) => {
-      privacyResolves.add(resolve);
       // 额外逻辑：当前页面的隐私弹窗弹起的时候，关掉其他页面的隐私弹窗
       closeOtherPagePopUp(closePopUp);
       setInnerShow(true);
-    };
+      [].concat(resolve).forEach(res => innerResolves.current.add(res));
+    }
+
+    if (privacyResolves.size) {
+      privacyHandler([...privacyResolves]);
+    }
 
     closeOtherPagePopUpHooks.add(closePopUp);
 
@@ -54,12 +60,14 @@ const PrivacyPopup = (props) => {
           })
       }
     }
-  })
+  });
 
   useDidHide(() => {
     closeOtherPagePopUpHooks.delete(closePopUp);
+    privacyResolves.clear();
+    privacyHandler = null;
   });
-
+  
   const handleOpenContract = () => {
     wx.openPrivacyContract({
       success: (res) => {
@@ -74,25 +82,22 @@ const PrivacyPopup = (props) => {
   const handleAgree = () => {
     setInnerShow(false);
     // 这里同时调用多个wx隐私接口时要如何处理：让隐私弹窗保持单例，点击一次同意按钮即可让所有pending中的wx隐私接口继续执行
-    privacyResolves.forEach((resolve) => {
+    innerResolves.current.forEach((resolve) => {
       resolve({
         event: 'agree',
         ButtonId: 'agree-btn',
       });
     });
-
-    privacyResolves.clear();
     bus.emit();
   };
 
   const handleDisagree = () => {
     setInnerShow(false);
-    privacyResolves.forEach((resolve) => {
+    innerResolves.current.forEach((resolve) => {
       resolve({
         event: 'disagree',
       });
     });
-    privacyResolves.clear();
   };
 
   return innerShow ? (
