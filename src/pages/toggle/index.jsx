@@ -1,4 +1,4 @@
-import Taro, { useDidShow } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 import { View, Input, Button } from '@tarojs/components'
 import './index.less'
 import PrivacyPopup from '../../components/PrivacyPopup'
@@ -24,16 +24,6 @@ const Index = (props) => {
         }
     })
   }
-  
-  const handleSwitchTab = () => {
-    Taro.switchTab({
-      url: '/pages/toggle/index'
-    })
-  }
-
-  useDidShow(() => {
-    Taro.getLocation({});
-  }, []);
 
   return (
     <View className="index">
@@ -47,9 +37,6 @@ const Index = (props) => {
 
       <View className="form-label">隐私API：</View>
       <Button className="form-button" onClick={handleChooseImage}>选择照片</Button>
-
-      <View className="form-label">SwtichTab：</View>
-      <Button className="form-button" onClick={handleSwitchTab}>点击跳转</Button>
       <PrivacyPopup/>
     </View>
   )

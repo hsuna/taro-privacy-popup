@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useDidShow, useDidHide } from '@tarojs/taro';
 import { View, Text, Button } from '@tarojs/components';
 import './index.less'
 import bus from './bus';
-import { useDidShow, useDidHide } from '@tarojs/taro';
 
 let privacyHandler = null;
 let privacyResolves = new Set();
@@ -34,6 +34,15 @@ const PrivacyPopup = (props) => {
   }, []);
 
   useDidShow(() => {
+    privacyHandler = (resolve) => {
+      privacyResolves.add(resolve);
+      // 额外逻辑：当前页面的隐私弹窗弹起的时候，关掉其他页面的隐私弹窗
+      closeOtherPagePopUp(closePopUp);
+      setInnerShow(true);
+    };
+
+    closeOtherPagePopUpHooks.add(closePopUp);
+
     if (auto) {
       if (typeof wx.getPrivacySetting === 'function') {
           wx.getPrivacySetting({
@@ -50,21 +59,6 @@ const PrivacyPopup = (props) => {
   useDidHide(() => {
     closeOtherPagePopUpHooks.delete(closePopUp);
   });
-
-  useEffect(() => {
-    privacyHandler = (resolve) => {
-      privacyResolves.add(resolve);
-      // 额外逻辑：当前页面的隐私弹窗弹起的时候，关掉其他页面的隐私弹窗
-      closeOtherPagePopUp(closePopUp);
-      setInnerShow(true);
-    };
-
-    closeOtherPagePopUpHooks.add(closePopUp);
-
-    return () => {
-      closeOtherPagePopUpHooks.delete(closePopUp);
-    };
-  }, []);
 
   const handleOpenContract = () => {
     wx.openPrivacyContract({
