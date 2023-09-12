@@ -10,6 +10,8 @@
 
 2. 在 2023年9月15号之后，不论 app.json 中是否有配置 __usePrivacyCheck__，隐私相关功能都会启用。
 
+3. 本示例无法在 Node.js 18 上运行，推荐使用 Node.js 16
+
 # 交互流程
 
 1. 用户点击隐私接口或Button组件，如果用户未同意过隐私政策，则会触发 onNeedPrivacyAuthorization 事件，如果已同意，则继续执行。
