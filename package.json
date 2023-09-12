@@ -38,6 +38,7 @@
     "@babel/runtime": "^7.7.7",
     "@tarojs/components": "3.4.3",
     "@tarojs/plugin-framework-react": "3.4.3",
+    "@tarojs/plugin-platform-weapp": "3.4.3",
     "@tarojs/plugin-inject": "0.0.2",
     "@tarojs/react": "3.4.3",
     "@tarojs/runtime": "3.4.3",
