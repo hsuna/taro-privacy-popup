@@ -115,7 +115,7 @@ const PrivacyPopup = (props) => {
         <View className="content">
             <View className="title">隐私保护指引</View>
             <View className="desc">
-                感谢您使用本游戏，您使用本游戏前应当阅井同意<Text className="link" onClick={handleOpenContract}>《{title}》</Text>当您点击同意并开始时用产品服务时，即表示你已理解并同息该条款内容，该条款将对您产生法律约束力。如您拒绝，将无法进入小程序。
+                感谢您使用本产品，使用本产品前应先阅读并同意<Text className="link" onClick={handleOpenContract}>《{title}》</Text>当您点击同意并开始时用本产品服务时，即表示你已理解并同息该条款内容，该条款将对您产生法律约束力。如您拒绝，许多功能将无法正常使用。
             </View>
             <View className="btns">
                 <Button className="btn btn-reject" onClick={handleDisagree}>拒绝</Button>
