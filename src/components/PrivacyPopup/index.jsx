@@ -95,7 +95,7 @@ const PrivacyPopup = (props) => {
     innerResolves.current.forEach((resolve) => {
       resolve({
         event: 'agree',
-        ButtonId: 'agree-btn',
+        buttonId: 'agree-btn',
       });
     });
     bus.emit();
